@@ -258,11 +258,15 @@ OCPartialMockObject *OCMGetAssociatedMockForObject(id anObject)
 void OCMReportFailure(OCMLocation *loc, NSString *description)
 {
     id testCase = [loc testCase];
+    #define XCTEST_QUICK_WORKAROUND 1
+    #if !XCTEST_QUICK_WORKAROUND
     if((testCase != nil) && [testCase respondsToSelector:@selector(recordFailureWithDescription:inFile:atLine:expected:)])
     {
         [testCase recordFailureWithDescription:description inFile:[loc file] atLine:[loc line] expected:NO];
     }
-    else if((testCase != nil) && [testCase respondsToSelector:@selector(failWithException:)])
+    else
+    #endif
+    if((testCase != nil) && [testCase respondsToSelector:@selector(failWithException:)])
     {
         NSException *exception = nil;
         if([NSException instancesRespondToSelector:@selector(failureInFile:atLine:withDescription:)])
